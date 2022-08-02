@@ -65,10 +65,9 @@ plot4 <- ggplot(WatVeg2, aes(x = Analyte, y = Mean, fill = Chain)) +
   ylab("Mean ng/L")
 
 
-
+# Used ggpubr to arrange plots with shared legend
 ggpubr::ggarrange(plot1, plot2, plot3, plot4,
           labels = "AUTO",
           common.legend = T,
           legend = "right",
           align = "hv")
-          # Used ggpubr (couldn't figure out cowplot one)
