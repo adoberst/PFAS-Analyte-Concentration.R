@@ -1,0 +1,74 @@
+getwd
+
+library(ggplot2)
+library(tidyr)
+library(dplyr)
+library(tidyverse)
+library(plyr)
+library(cowplot)
+library(ggpubr)
+
+WatTruk <- read.csv("WaterTruk.csv", header = TRUE)
+WatVeg <- read.csv("WatVeg.csv", header = TRUE)
+SedTruk <- read.csv("SedTruk.csv", header = TRUE)
+SedVeg <- read.csv("SedVeg.csv", header = TRUE)
+
+###### Data clean
+
+# Get values of Analytes
+unique(WatTruk$Analyte)
+
+# Convert ND to 0 for data sets (using plyr), do this before removing rows to retain decimal <1 in SedVeg
+SedTruk$Mean <- as.numeric(mapvalues(SedTruk$Mean, c("ND"), c(0)))
+SedVeg$Mean <- as.numeric(mapvalues(SedVeg$Mean, c("ND"), c(0)))
+WatTruk$Mean <- as.numeric(mapvalues(WatTruk$Mean, c("ND"), c(0)))
+WatVeg$Mean <- as.numeric(mapvalues(WatVeg$Mean, c("ND"), c(0)))
+
+# Drop rows with no mean values across all data sets for cleaner graph
+SedTruk2 <- SedTruk[-c(6, 7, 18, 19, 20), ]
+SedVeg2 <- SedVeg[-c(6, 7, 18, 19, 20), ]
+WatTruk2 <- WatTruk[-c(6, 7, 18, 19, 20), ]
+WatVeg2 <- WatVeg[-c(6, 7, 18, 19, 20), ]
+
+
+###### Step 2 Plotting in ggplot
+
+ggplot(SedTruk2, aes(x = Analyte, y = Mean, fill = Chain)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual("Chain Length", values = c("Long" = "#66CCCC", "Short" = "#993333")) +
+  theme(legend.position="none") +
+  labs(subtitle = "Trukee River Sediments") +
+  ylab("Mean ng/L")
+
+plot1 <- ggplot(SedTruk2, aes(x = Analyte, y = Mean, fill = Chain)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual("Chain Length", values = c("Long" = "#66CCCC", "Short" = "#993333")) +
+  labs(subtitle = "Trukee River Sediments") +
+  ylab("Mean ng/L")
+
+plot2 <- ggplot(SedVeg2, aes(x = Analyte, y = Mean, fill = Chain)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual("Chain Length", values = c("Long" = "#66CCCC", "Short" = "#993333")) +
+  labs(subtitle = "Vegas River Sediments") +
+  ylab("Mean ng/L")
+
+plot3 <- ggplot(WatTruk2, aes(x = Analyte, y = Mean, fill = Chain)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual("Chain Length", values = c("Long" = "#66CCCC", "Short" = "#993333")) +
+  labs(subtitle = "truckee River Surface Water") +
+  ylab("Mean ng/L")
+
+plot4 <- ggplot(WatVeg2, aes(x = Analyte, y = Mean, fill = Chain)) + 
+  geom_bar(stat = "identity") +
+  scale_fill_manual("Chain Length", values = c("Long" = "#66CCCC", "Short" = "#993333")) +
+  labs(subtitle = "Vegas Surface Water") +
+  ylab("Mean ng/L")
+
+
+
+ggpubr::ggarrange(plot1, plot2, plot3, plot4,
+          labels = "AUTO",
+          common.legend = T,
+          legend = "right",
+          align = "hv")
+          # Used ggpubr (couldn't figure out cowplot one)
