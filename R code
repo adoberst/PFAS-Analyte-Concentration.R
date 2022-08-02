@@ -13,7 +13,7 @@ WatVeg <- read.csv("WatVeg.csv", header = TRUE)
 SedTruk <- read.csv("SedTruk.csv", header = TRUE)
 SedVeg <- read.csv("SedVeg.csv", header = TRUE)
 
-###### Data clean
+##### Data clean
 
 # Get values of Analytes
 unique(WatTruk$Analyte)
